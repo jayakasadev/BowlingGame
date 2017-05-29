@@ -52,4 +52,24 @@ class GameScoreTest extends FlatSpec{
     assert(scorer.validate(random2))
     assert(scorer.score(random2) == 128)
   }
+
+  "A GameScore input of X7/" should "not be valid" in {
+    assert(!scorer.validate(invalid))
+  }
+
+  "A GameScore input of X7/9-X-88/-6XXX8" should "not be valid" in {
+    assert(!scorer.validate(invalid2))
+  }
+
+  "A GameScore input of X7/9-X-88/-6XX/8" should "not be valid" in {
+    assert(!scorer.validate(invalid3))
+  }
+
+  "A GameScore input of /7/9-X-88/-6XX/8" should "not be valid" in {
+    assert(!scorer.validate(invalid4))
+  }
+
+  "A GameScore input of /7/9-X-88/-6XX/8/7/9-X-88/-6XX/8" should "not be valid" in {
+    assert(!scorer.validate(invalid5))
+  }
 }
