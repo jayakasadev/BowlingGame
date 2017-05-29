@@ -23,16 +23,176 @@ class GameScore {
     */
   def validate(input: String): Boolean = {
 
+    // no helper method needed for spare
+    //its a special case
+    // gonne use more case statements and pattern matching instead of if loops for validation this time
+
+    /**
+      * Methods matches first char of X or a Strike
+      *
+      * @param input
+      * @param count
+      * @return
+      */
     def X(input: List[Char], count: Int): TailRec[Boolean] = input match {
-      case _ => done(false)
+      case Nil => {
+        // println("X Nil " + count)
+        done(true)
+      }
+      case 'X' :: rest if(count == 9) => rest match {
+        case x :: y :: Nil => x match {
+          case 'X' => y match {
+            case x if(x == 'X' | x.asDigit > 0 | x == '-') => done(true)
+            case _ => done(false)
+          }
+          case z if(z == '-' | z.asDigit > 0) => y match {
+            case x if(x == '/' | x.asDigit > 0 | x == '-') => done(true)
+            case _ => done(false)
+          }
+          case _ => done(false)
+        }
+        case _ => done(false)
+      }
+      case 'X' :: rest => rest match {
+        case Nil => {
+          // println("in X Nil " + count)
+          done(true)
+        }
+        case 'X' :: tail => {
+          // println("X X " + count)
+          tailcall(X(rest, count+1))
+        }
+        case '-' :: tail => {
+          // println("X - " + count)
+          tailcall(miss(rest, count+1))
+        }
+        case y :: tail if(y.asDigit > 0) => {
+          // println("X " + y  + " " + count)
+          tailcall(num(rest, count+1))
+        }
+        case _ => {
+          // println(input + " " + count)
+          done(false)
+        }
+      }
+      case _ => {
+        // println("weird match X " + count)
+        done(false)
+      }
     }
 
+    /**
+      * Methods matches first char of - or a Miss
+      *
+      * @param input
+      * @param count
+      * @return
+      */
     def miss(input: List[Char], count: Int): TailRec[Boolean] = input match {
-      case Nil => done(false)
+      case Nil => {
+        // println("- Nil " + count)
+        done(true)
+      }
+      case '-' :: rest => rest match {
+        case Nil => {
+          // println("in - Nil " + count)
+          done(true)
+        }
+        case x :: tail if(x == '/' & count == 9) => tail match {
+          case y :: Nil => y match {
+            case z if(z == 'X' | z == '-' | z.asDigit > 0) => done(true)
+            case _ => done(false)
+          }
+          case _ => done(false)
+        }
+        case x :: tail if(x == '-' | x == '/' | x.asDigit > 0) => tail match {
+          case 'X' :: tail2 => {
+            // println("- - or - / or - num followed by X " + count)
+            tailcall(X(tail, count+1))
+          }
+          case '-' :: tail2 => {
+            // println("- - or - / or - num followed by - " + count)
+            tailcall(miss(tail, count+1))
+          }
+          case x :: tail2 if(x.asDigit > 0) => {
+            // println("- - or - / or - num followed by num " + count)
+            tailcall(num(tail, count+1))
+          }
+          case Nil => {
+            // println("- - or - / or - num followed by Nil " + count)
+            done(true)
+          }
+          case _ => {
+            // println("- - or - / or - num followed by / " + count)
+            done(false)
+          }
+        }
+        case _ => {
+          // println("miss X " + count)
+          done(false)
+        }
+      }
+      case _ => {
+        // println("weird match miss " + count)
+        done(false)
+      }
     }
 
+    /**
+      * Methods matches first char which is a number
+      *
+      * @param input
+      * @param count
+      * @return
+      */
     def num(input: List[Char], count: Int): TailRec[Boolean] = input match {
-      case _ => done(false)
+      case Nil => {
+        // println("num Nil " + count)
+        done(true)
+      }
+      case x :: rest if(x.asDigit > 0) => rest match {
+        case Nil => {
+          // println("in num Nil " + count)
+          done(true)
+        }
+        case x :: tail if(x == '/' & count == 9) => tail match {
+          case y :: Nil => y match {
+            case z if(z == 'X' | z == '-' | z.asDigit > 0) => done(true)
+            case _ => done(false)
+          }
+          case _ => done(false)
+        }
+        case x :: tail if(x == '-' | x == '/' | x.asDigit > 0) => tail match {
+          case 'X' :: tail2 => {
+            // println("num - or num / or num num followed by X " + count)
+            tailcall(X(tail, count+1))
+          }
+          case '-' :: tail2 => {
+            // println("num - or num / or num num followed by - " + count)
+            tailcall(miss(tail, count+1))
+          }
+          case x :: tail2 if(x.asDigit > 0) => {
+            // println("num - or num / or num num followed by num " + count)
+            tailcall(num(tail, count+1))
+          }
+          case Nil => {
+            // println("num - or num / or num num followed by Nil " + count)
+            done(true)
+          }
+          case _ => {
+            // println("num - or num / or num num followed by / " + count)
+            done(false)
+          }
+        }
+        case _ => {
+          // println("num X " + count)
+          done(false)
+        }
+      }
+      case _ => {
+        // println("weird match num " + count)
+        done(false)
+      }
     }
 
     if(input.length < 12 || input.length > 21) {
@@ -43,11 +203,20 @@ class GameScore {
       val list = input.toList
       list match {
           // input can start in 3 states only: X, num or -
-        case 'X' :: rest => tailcall(X(list, 0)).result
+        case 'X' :: rest => {
+          // println("X " + list)
+          tailcall(X(list, 0)).result
+        }
           // matches misses
-        case '-' :: rest => tailcall(miss(list, 0)).result
+        case '-' :: rest => {
+          // println("- " + list)
+          tailcall(miss(list, 0)).result
+        }
           // matches numeric input greater than 0 since range is 0 - 9
-        case x :: rest if(x.asDigit > 0) => tailcall(num(list, 0)).result
+        case x :: rest if(x.asDigit > 0) => {
+          // println("num " + list)
+          tailcall(num(list, 0)).result
+        }
           // base case
         case _ => false
       }

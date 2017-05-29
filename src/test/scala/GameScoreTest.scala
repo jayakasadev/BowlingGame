@@ -14,6 +14,13 @@ class GameScoreTest extends FlatSpec{
   val random2 = "X7/9-X-88/-6X-/8"
   val misses = "--------------------"
 
+  val invalid = "X7/"
+  val invalid2 = "X7/9-X-88/-6XXX8"
+  val invalid3 = "X7/9-X-88/-6XX/8"
+  val invalid4 = "/7/9-X-88/-6XX/8"
+  val invalid5 = "/7/9-X-88/-6XX/8/7/9-X-88/-6XX/8"
+  val invalid6 = "0/7/9-X-88/-6XX/"
+
   val scorer = new GameScore
 
   "A GameScore input of XXXXXXXXXXXX" should "be valid and output a value of 300" in {
