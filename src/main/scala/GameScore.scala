@@ -1,4 +1,5 @@
 import scala.annotation.tailrec
+import scala.util.control.TailCalls.{TailRec, done, tailcall}
 
 /**
   * Class to Score a 10 pin Bowling Game
@@ -21,6 +22,19 @@ class GameScore {
     * @return
     */
   def validate(input: String): Boolean = {
+
+    def X(input: List[Char], count: Int): TailRec[Boolean] = input match {
+      case _ => done(false)
+    }
+
+    def miss(input: List[Char], count: Int): TailRec[Boolean] = input match {
+      case Nil => done(false)
+    }
+
+    def num(input: List[Char], count: Int): TailRec[Boolean] = input match {
+      case _ => done(false)
+    }
+
     if(input.length < 12 || input.length > 21) {
       // println("invalid size")
       false
@@ -28,6 +42,12 @@ class GameScore {
     else{
       val list = input.toList
       list match {
+          // input can start in 3 states only: X, num or -
+        case 'X' :: rest => tailcall(X(list, 0)).result
+          // matches misses
+        case '-' :: rest => tailcall(miss(list, 0)).result
+          // matches numeric input greater than 0 since range is 0 - 9
+        case x :: rest if(x.asDigit > 0) => tailcall(num(list, 0)).result
           // base case
         case _ => false
       }
