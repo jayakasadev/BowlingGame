@@ -72,4 +72,8 @@ class GameScoreTest extends FlatSpec{
   "A GameScore input of /7/9-X-88/-6XX/8/7/9-X-88/-6XX/8" should "not be valid" in {
     assert(!scorer.validate(invalid5))
   }
+
+  "A GameScore input of 0/7/9-X-88/-6XX/" should "not be valid" in {
+    assert(!scorer.validate(invalid6))
+  }
 }
