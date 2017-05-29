@@ -11,6 +11,29 @@ object GameScore{
 
 class GameScore {
 
+
+  /**
+    * Method to validate the input
+    *
+    * Will model this with an FSM using mutual recursion
+    *
+    * @param input
+    * @return
+    */
+  def validate(input: String): Boolean = {
+    if(input.length < 12 || input.length > 21) {
+      // println("invalid size")
+      false
+    }
+    else{
+      val list = input.toList
+      list match {
+          // base case
+        case _ => false
+      }
+    }
+  }
+
   /**
     * Method to compute the score for an input String
     *
